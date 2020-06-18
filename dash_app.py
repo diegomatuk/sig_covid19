@@ -5,7 +5,10 @@ import time
 from collections import deque
 import plotly.graph_objs as go
 import random
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output , State
+
+from objects.rutas import Rutas
+
 
 external_css = ["https://codepen.io/amyoshino/pen/jzXypZ.css"]
 
@@ -31,8 +34,16 @@ app.layout = html.Div([
 
         ),
 
+    #INPUTS BLOCK
+    html.Div([
+        dcc.Input(id = 'cliente-afectado',type = 'text',placeholder = '',value = ''),
+        dcc.Input(id = 'numero_rutas', type = 'number',placeholder = '', value = ''),
+        html.Button('Calcular',id = 'submit-val',n_clicks = 0)
+
+        ]),
     #SEGUNDO BLOQUE
     html.Div([
+
     html.Iframe(id = 'mapa1', srcDoc = open('mapa1.html','r').read(),width = '32%', height = '600',style = {'margin':'4px'}),
     html.Iframe(id = 'mapa2', srcDoc = open('mapa2.html','r').read(),width = '32%', height = '600',style = {'margin':'4px'}),
     html.Iframe(id = 'mapa3', srcDoc = open('mapa_interseccion.html','r').read(),width = '32%', height = '600',style = {'margin':'4px'})],
@@ -48,20 +59,19 @@ app.layout = html.Div([
 
 
 
+@app.callback(
+    [Output('mapa1' ,'srcDoc'),
+    Output('mapa2' ,'srcDoc'),
+    Output('mapa3' ,'srcDoc')],
+    [Input('submit-val','n_clicks')],
+    [State('numero_rutas','value'),
+    State('cliente-afectado','value')]
 
-
-
-# @app.callback(Output('tabs-example-content', 'children'),
-#               [Input('tabs-example', 'value')])
-# def render_content(tab):
-#     if tab == 'tab-1':
-#         return html.Div([
-#             html.H3('Tab content 1')
-#         ])
-#     elif tab == 'tab-2':
-#         return html.Div([
-#             html.H3('Tab content 2')
-#         ])
+)
+def calculo(numero_rutas,cliente_afectado,n_clicks):
+    ruta = Rutas()
+    ruta.main(num_puntos = 5,nombre_ruta = 'ruta1',n_clicks = n_clicks)
+    return open('mapa1.html','r').read(), open('mapa2.html').read(),  open('mapa_interseccion.html').read()
 
 
 if __name__ == '__main__':
